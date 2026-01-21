@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사서교사-교과교사 협력수업 설계도구(중학교)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Data Source -->
+    <script src="./data/standards_data.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            /* Indigo 500 */
+            --primary-hover: #4f46e5;
+            /* Indigo 600 */
+            --secondary-color: #10b981;
+            /* Emerald 500 */
+            --accent-color: #f59e0b;
+            /* Amber 500 */
+            --bg-color: #f8fafc;
+            /* Slate 50 */
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            /* Slate 800 */
+            --text-sub: #64748b;
+            /* Slate 500 */
+            --border-color: #e2e8f0;
+            /* Slate 200 */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .copyright {
+            position: fixed;
+            top: 15px;
+            right: 25px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        @media print {
+            .copyright {
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        header p {
+            margin: 0.5rem 0 0;
+            opacity: 0.9;
+        }
+
+        /* Layout Wrapper */
+        .main-wrapper {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            max-width: 1300px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 0 1rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            padding: 2rem 0;
+        }
+
+        .sidebar-card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            display: block;
+            text-align: center;
+        }
+
+        .ref-link {
+            display: block;
+            padding: 0.8rem;
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .ref-link:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ref-link span {
+            display: block;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 2px;
+        }
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            padding: 2rem 0;
+            max-width: 1000px;
+        }
+
+        @media (max-width: 1100px) {
+            .main-wrapper {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .sidebar {
+                padding-bottom: 0;
+            }
+
+            .sidebar-card {
+                position: static;
+            }
+        }
+
+        .sidebar-footer {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .btn-admin {
+            background-color: #f1f5f9;
+            color: var(--text-sub);
+            border: 1px dashed var(--border-color);
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            border-radius: 0.4rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-admin:hover {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+            border-color: var(--text-sub);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.8rem;
+        }
+
+        .link-item-edit {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .manage-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-danger {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.3rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .btn-danger:hover {
+            background-color: #fecaca;
+        }
+
+        /* Wizard Progress */
+        .wizard-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .wizard-progress::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 4px;
+            width: 100%;
+            background-color: var(--border-color);
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+
+        .step-indicator {
+            position: relative;
+            z-index: 1;
+            background-color: var(--bg-color);
+            padding: 0 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            color: var(--text-sub);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 2px solid var(--bg-color);
+        }
+
+        .step-indicator.active .step-circle {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step-indicator.completed .step-circle {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .step-label {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-sub);
+        }
+
+        .step-indicator.active .step-label {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        /* Step Content */
+        .step-content {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        select,
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+            /* Fix padding issue */
+        }
+
+        select:focus,
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Standard Cards */
+        .standard-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+            /* Slate 50 */
+        }
+
+        .standard-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .standard-item:last-child {
+            border-bottom: none;
+        }
+
+        .standard-item:hover {
+            background-color: #e0e7ff;
+            /* Indigo 100 */
+        }
+
+        .standard-item.selected {
+            background-color: #c7d2fe;
+            /* Indigo 200 */
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .code-badge {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Chips for Context */
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .chip {
+            padding: 0.5rem 1rem;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            background-color: #cbd5e1;
+        }
+
+        .chip.selected {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Navigation Buttons */
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-prev {
+            background-color: #cbd5e1;
+            /* Slate 300 */
+            color: var(--text-main);
+        }
+
+        .btn-prev:hover {
+            background-color: #94a3b8;
+            /* Slate 400 */
+        }
+
+        .btn-next {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-next:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-print {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-print:hover {
+            background-color: #059669;
+        }
+
+        /* Summary Box in Step 4 */
+        .summary-box {
+            background-color: #f1f5f9;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .summary-item {
+            margin-bottom: 1rem;
+        }
+
+        .summary-label {
+            font-weight: bold;
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .summary-content {
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        /* Design Grid in Step 4 */
+        .design-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .design-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .full-width {
+                grid-column: span 2;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background-color: white;
+            }
+
+            header,
+            .wizard-progress,
+            .btn-container,
+            .sidebar {
+                display: none !important;
+            }
+
+            .main-wrapper {
+                display: block;
+                margin: 0;
+                padding: 0;
+                max-width: none;
+            }
+
+            .step-content {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                display: none !important;
+                /* Hide unnecessary steps by default */
+                margin-bottom: 2rem;
+            }
+
+            /* Conditional visibility based on print mode */
+            body.print-step-4 #step4,
+            body.print-step-5 #step5,
+            body.print-step-6 #step6,
+            body.print-all #step4,
+            body.print-all #step5,
+            body.print-all #step6 {
+                display: block !important;
+            }
+
+            body.print-all .step-content {
+                page-break-before: always;
+            }
+
+            body.print-all #step4 {
+                page-break-before: avoid;
+            }
+
+            textarea,
+            input[type="text"] {
+                border: 1px solid #eee !important;
+                resize: none;
+                font-family: inherit;
+                background: transparent !important;
+                color: black !important;
+                height: auto !important;
+                /* Allow height to be driven by JS or content */
+            }
+
+            .summary-box {
+                border: 1px solid #818cf8;
+                background-color: #f8fafc !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            table {
+                page-break-inside: auto;
+                /* Allow table to split across pages */
+                border-collapse: collapse !important;
+                table-layout: fixed;
+                /* Keep column widths stable */
+            }
+
+            tr {
+                page-break-inside: avoid;
+                /* Avoid breaking in middle of a row */
+            }
+
+            th,
+            td {
+                border: 1px solid #bfdbfe !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                word-break: break-all;
+            }
+        }
+
+        /* Export Only Styles */
+        .export-only {
+            display: none;
+        }
+
+        .no-export {
+            display: inline-block;
+        }
+
+        /* When exporting, we will swap these */
+        .exporting .no-export {
+            display: none !important;
+        }
+
+        .exporting .export-only {
+            display: block !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="copyright">Ⓒ 박보경 2026</div>
+    <header>
+        <h1>사서교사-교과교사 협력수업 설계도구(중학교)</h1>
+        <p>성취기준 기반 학교도서관-교과 융합 수업 디자인</p>
+        <p style="font-size: 0.9rem; margin-top: 0.3rem; opacity: 0.8;">(대상과목 : 국어, 영어, 일반사회, 지리, 과학, 도덕, 미술, 진로)</p>
+    </header>
+
+    <div class="main-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <span class="sidebar-title">참고링크</span>
+
+                <div id="dynamicLinks">
+                    <!-- Links will be rendered here -->
+                </div>
+
+                <div class="sidebar-footer">
+                    <button class="btn-admin" onclick="openAdminModal()">⚙️ 링크 관리</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="container">
+            <!-- Wizard Progress -->
+            <div class="wizard-progress">
+                <div class="step-indicator active" id="ind-1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">교과 선택</div>
+                </div>
+                <div class="step-indicator" id="ind-2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">도서관 선택</div>
+                </div>
+                <div class="step-indicator" id="ind-3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">맥락 설정</div>
+                </div>
+                <div class="step-indicator" id="ind-4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">수업 설계</div>
+                </div>
+                <div class="step-indicator" id="ind-5">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">과제 설계</div>
+                </div>
+                <div class="step-indicator" id="ind-6">
+                    <div class="step-circle">6</div>
+                    <div class="step-label">평가 루브릭</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Subject Selection -->
+            <div class="step-content active" id="step1">
+                <h2>1. 교과 성취기준 선택</h2>
+                <div class="form-group">
+                    <label for="subjectSelect">교과목 선택</label>
+                    <select id="subjectSelect" onchange="renderSubjectStandards()">
+                        <option value="">교과를 선택하세요</option>
+                        <!-- Options populated by JS -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>성취기준 목록 (클릭하여 선택)</label>
+                    <div class="standard-list" id="subjectStandardsList">
+                        <div style="padding:1rem; color:#888;">교과를 먼저 선택해주세요.</div>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <div></div> <!-- Spacer -->
+                    <button class="btn btn-next" onclick="nextStep(2)">다음 단계 &rightarrow;</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Library Standard Selection -->
+            <div class="step-content" id="step2">
+                <h2>2. 학교도서관 성취기준 선택 (도정)</h2>
+                <div class="form-group">
+                    <label>정보활동 성취기준 목록 (클릭하여 선택)</label>
+                    <div class="standard-list" id="libStandardsList">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(1)">&leftarrow; 이전</button>
+                    <button class="btn btn-next" onclick="nextStep(3)">다음 단계 &rightarrow;</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Context Definition -->
+            <div class="step-content" id="step3">
+                <h2>3. 삶의 맥락 설정</h2>
+                <p style="color:var(--text-sub); margin-bottom:1.5rem;">수업이 학생들의 실제 삶과 연결되도록 배경 맥락을 설정합니다.</p>
+
+                <div class="form-group">
+                    <label>추천 맥락 키워드 (선택 가능)</label>
+                    <div class="chip-container" id="contextChips">
+                        <div class="chip" onclick="selectContext('개인과 사회의 공동 행복')">개인과 사회의 공동 행복</div>
+                        <div class="chip" onclick="selectContext('정체성과 자기주도성')">정체성과 자기주도성</div>
+                        <div class="chip" onclick="selectContext('보편적 사회복지')">보편적 사회복지</div>
+                        <div class="chip" onclick="selectContext('포용력과 이해력')">포용력과 이해력</div>
+                        <div class="chip" onclick="selectContext('공감과 상호 협력')">공감과 상호 협력</div>
+                        <div class="chip" onclick="selectContext('생태 전환과 기후 변화')">생태 전환과 기후 변화</div>
+                        <div class="chip" onclick="selectContext('디지털 전환과 AI')">디지털 전환과 AI</div>
+                        <div class="chip" onclick="selectContext('책임 있는 민주시민')">책임 있는 민주시민</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="customContext">수업 맥락 / 주제 기술</label>
+                    <input type="text" id="customContext" placeholder="예: 생성형 AI를 활용한 나만의 진로 로드맵 설계">
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(2)">&leftarrow; 이전</button>
+                    <button class="btn btn-next" onclick="nextStep(4)">설계 시작 &rightarrow;</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Deep Lesson Design -->
+            <div class="step-content" id="step4">
+                <h2>4. 깊이 있는 수업 설계 (Deep Lesson Design)</h2>
+
+                <!-- Selected Standards Summary -->
+                <div class="summary-box">
+                    <div class="summary-item">
+                        <div class="summary-label">선택된 교과 성취기준</div>
+                        <div class="summary-content" id="summarySubject">...</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">선택된 도서관 성취기준</div>
+                        <div class="summary-content" id="summaryLib">...</div>
+                    </div>
+                    <div class="summary-item" style="margin-bottom:0;">
+                        <div class="summary-label">삶의 맥락</div>
+                        <div class="summary-content" id="summaryContext">...</div>
+                    </div>
+                </div>
+
+                <div class="design-grid">
+                    <div class="form-group full-width">
+                        <label for="lessonTitle">수업 제목</label>
+                        <input type="text" id="lessonTitle" placeholder="창의적인 수업 제목을 입력하세요">
+                    </div>
+                </div>
+
+                <!-- Unit Design Section -->
+                <div
+                    style="background-color: #f0fdf4; padding: 1.5rem; border-radius: 0.5rem; margin-top: 1.5rem; border: 1px solid #bbf7d0;">
+                    <h3
+                        style="color: #15803d; margin-top: 0; border-bottom: 1px solid #bbf7d0; padding-bottom: 0.5rem;">
+                        Ⅰ.
+                        단원 수업 설계 (Unit Design)</h3>
+
+                    <div class="design-grid">
+                        <div class="form-group">
+                            <label for="bigIdeaLib">핵심 아이디어 - 도서관과 정보생활</label>
+                            <textarea id="bigIdeaLib" placeholder="도서관과 정보생활 단원의 핵심 개념"
+                                style="min-height: 80px;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="bigIdeaSub">핵심 아이디어 - 협력교과</label>
+                            <textarea id="bigIdeaSub" placeholder="협력교과 단원의 핵심 개념" style="min-height: 80px;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="design-grid">
+                        <div class="form-group full-width">
+                            <label>내용 요소 (Content Elements)</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <!-- Library Side -->
+                                <div
+                                    style="background-color: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid #bbf7d0;">
+                                    <div
+                                        style="font-weight: bold; margin-bottom: 0.75rem; color: #15803d; border-bottom: 1px solid #f0fdf4;">
+                                        ① 도서관과 정보생활</div>
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        <input type="text" id="contentKnowledgeLib" placeholder="지식·이해 (도서관)">
+                                        <input type="text" id="contentProcessLib" placeholder="과정·기능 (도서관)">
+                                        <input type="text" id="contentValueLib" placeholder="가치·태도 (도서관)">
+                                    </div>
+                                </div>
+                                <!-- Subject Side -->
+                                <div
+                                    style="background-color: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid #bbf7d0;">
+                                    <div
+                                        style="font-weight: bold; margin-bottom: 0.75rem; color: #15803d; border-bottom: 1px solid #f0fdf4;">
+                                        ② 협력교과</div>
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        <input type="text" id="contentKnowledgeSub" placeholder="지식·이해 (교과)">
+                                        <input type="text" id="contentProcessSub" placeholder="과정·기능 (교과)">
+                                        <input type="text" id="contentValueSub" placeholder="가치·태도 (교과)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="graspsTask">평가 과제 (GRASPS)</label>
+                            <textarea id="graspsTask"
+                                placeholder="학생들이 수행해야 할 실제적인 과제는 무엇인가? (Goal, Role, Audience, Situation, Product, Standards)"
+                                style="min-height: 100px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Session Design Section -->
+                <div
+                    style="background-color: #eff6ff; padding: 1.5rem; border-radius: 0.5rem; margin-top: 1.5rem; border: 1px solid #bfdbfe;">
+                    <h3
+                        style="color: #1d4ed8; margin-top: 0; border-bottom: 1px solid #bfdbfe; padding-bottom: 0.5rem;">
+                        Ⅱ.
+                        차시별 세부 설계 (Session Design)</h3>
+
+                    <div class="design-grid">
+                        <div class="form-group">
+                            <label for="instructionalIntent">수업 의도 (Instructional Intent)</label>
+                            <textarea id="instructionalIntent" placeholder="이 수업을 통해 학생들이 무엇을 경험하고 배우기를 바라는가?"
+                                style="min-height: 435px;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>탐구 질문 (Inquiry Question)</label>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Factual Slot -->
+                                <div
+                                    style="background-color: #fff; border: 1px solid #bfdbfe; border-radius: 0.5rem; padding: 1rem; box-shadow: var(--shadow-sm);">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                        <span style="font-weight: bold; color: #1d4ed8; font-size: 0.9rem;">① 사실적 질문
+                                            (Factual)</span>
+                                        <button class="btn"
+                                            style="padding: 0.2rem 0.6rem; font-size: 0.75rem; background-color: #3b82f6; color: white;"
+                                            onclick="generateSpecificQuestion('factual')">🪄 생성</button>
+                                    </div>
+                                    <textarea id="qFactual" placeholder="사실적 질문을 입력하거나 생성하세요."
+                                        style="min-height: 60px; font-size: 0.9rem;"></textarea>
+                                </div>
+
+                                <!-- Conceptual Slot -->
+                                <div
+                                    style="background-color: #fff; border: 1px solid #bfdbfe; border-radius: 0.5rem; padding: 1rem; box-shadow: var(--shadow-sm);">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                        <span style="font-weight: bold; color: #1d4ed8; font-size: 0.9rem;">② 개념적 질문
+                                            (Conceptual)</span>
+                                        <button class="btn"
+                                            style="padding: 0.2rem 0.6rem; font-size: 0.75rem; background-color: #3b82f6; color: white;"
+                                            onclick="generateSpecificQuestion('conceptual')">🪄 생성</button>
+                                    </div>
+                                    <textarea id="qConceptual" placeholder="개념적 질문을 입력하거나 생성하세요."
+                                        style="min-height: 60px; font-size: 0.9rem;"></textarea>
+                                </div>
+
+                                <!-- Controversial Slot -->
+                                <div
+                                    style="background-color: #fff; border: 1px solid #bfdbfe; border-radius: 0.5rem; padding: 1rem; box-shadow: var(--shadow-sm);">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                        <span style="font-weight: bold; color: #1d4ed8; font-size: 0.9rem;">③ 논쟁적 질문
+                                            (Controversial)</span>
+                                        <button class="btn"
+                                            style="padding: 0.2rem 0.6rem; font-size: 0.75rem; background-color: #3b82f6; color: white;"
+                                            onclick="generateSpecificQuestion('controversial')">🪄 생성</button>
+                                    </div>
+                                    <textarea id="qControversial" placeholder="논쟁적 질문을 입력하거나 생성하세요."
+                                        style="min-height: 60px; font-size: 0.9rem;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>깊이있는 수업 과정안 (Process Plan)</label>
+                        <div style="overflow-x: auto;">
+                            <table id="processTable"
+                                style="width: 100%; border-collapse: collapse; border: 1px solid #bfdbfe; font-size: 0.9rem;">
+                                <thead>
+                                    <tr style="background-color: #818cf8; color: white;">
+                                        <th rowspan="2" style="border: 1px solid #bfdbfe; padding: 0.5rem; width: 8%;">
+                                            차시
+                                        </th>
+                                        <th colspan="3" style="border: 1px solid #bfdbfe; padding: 0.5rem;">탐구-실행-성찰의 과정
+                                        </th>
+                                        <th rowspan="2" class="no-export"
+                                            style="border: 1px solid #bfdbfe; padding: 0.5rem; width: 5%;">
+                                            관리</th>
+                                    </tr>
+                                    <tr style="background-color: #a5b4fc; color: white;">
+                                        <th style="border: 1px solid #bfdbfe; padding: 0.5rem; width: 29%;">탐구·실행·성찰을 위한
+                                            수업 활동</th>
+                                        <th style="border: 1px solid #bfdbfe; padding: 0.5rem; width: 29%;">수업방법</th>
+                                        <th style="border: 1px solid #bfdbfe; padding: 0.5rem; width: 29%;">수업·평가 연계의
+                                            주안점</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="processTableBody">
+                                    <tr>
+                                        <td class="session-number"
+                                            style="border: 1px solid #bfdbfe; text-align: center; font-weight: bold; background-color: #f8fafc;">
+                                            1</td>
+                                        <td style="border: 1px solid #bfdbfe; padding: 0;">
+                                            <textarea class="cycle-activities"
+                                                placeholder="[수업 활동] 사실적 질문, 작품 감상, 내용 정리 등"
+                                                style="width: 100%; border: none; min-height: 120px; padding: 0.5rem; resize: vertical; display: block;"></textarea>
+                                        </td>
+                                        <td style="border: 1px solid #bfdbfe; padding: 0;">
+                                            <textarea class="cycle-methods" placeholder="[수업방법] 협동학습, 프로젝트 기반 학습 등"
+                                                style="width: 100%; border: none; min-height: 120px; padding: 0.5rem; resize: vertical; display: block;"></textarea>
+                                        </td>
+                                        <td style="border: 1px solid #bfdbfe; padding: 0;">
+                                            <textarea class="cycle-focus" placeholder="[주안점] 진단평가, 성취기준 연계, 경험 파악 등"
+                                                style="width: 100%; border: none; min-height: 120px; padding: 0.5rem; resize: vertical; display: block;"></textarea>
+                                        </td>
+                                        <td class="no-export"
+                                            style="border: 1px solid #bfdbfe; text-align: center; background-color: #f8fafc;">
+                                            -
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn"
+                            style="width: 100%; margin-top: 0.5rem; background-color: #818cf8; color: white;"
+                            onclick="addSessionRow()">+ 차시 추가</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>수업 단계 (Steps)</label>
+                        <div
+                            style="border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem; background-color: white;">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.9rem; color: var(--text-sub);">도입 (Introduction)</label>
+                                <input type="text" id="stepIntro" placeholder="동기 유발, 전시 학습 상기, 수업 목표 확인">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.9rem; color: var(--text-sub);">전개 (Development)</label>
+                                <textarea id="stepDev" placeholder="주요 학습 활동, 학생 참여, 교사 지원"
+                                    style="min-height: 120px;"></textarea>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.9rem; color: var(--text-sub);">정리 (Conclusion)</label>
+                                <input type="text" id="stepConcl" placeholder="학습 내용 정리, 차시 예고, 과제 제시">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(3)">&leftarrow; 이전 단계</button>
+                    <button class="btn btn-print" style="margin: 0 0.5rem; background-color: #818cf8;"
+                        onclick="printStep(4)">🖨 4단계 인쇄</button>
+                    <button class="btn btn-next" onclick="nextStep(5)">기본 과정 설계 완료 (5단계로) &rightarrow;</button>
+                </div>
+            </div>
+
+            <!-- Step 5: GRASPS Assessment Generator -->
+            <div class="step-content" id="step5">
+                <h2>5. 과제 설계 (GRASPS)</h2>
+                <p style="color:var(--text-sub); margin-bottom:1.5rem;">성취기준을 바탕으로 실제적인 수행평가 과제를 디자인합니다.</p>
+
+                <div class="no-export"
+                    style="margin-bottom: 2rem; padding: 1rem; background-color: #fef3c7; border: 1px solid #fcd34d; border-radius: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <strong style="color: #92400e;">🪄 GRASPS 자동 생성기</strong>
+                        <div style="font-size: 0.85rem; color: #b45309;">선택한 성취기준을 맥락에 맞게 조합하여 시나리오를 구성합니다.</div>
+                    </div>
+                    <button class="btn" style="background-color: var(--accent-color); color: white;"
+                        onclick="generateGRASPS()">시나리오 생성하기</button>
+                </div>
+
+                <div class="design-grid">
+                    <div class="form-group">
+                        <label for="g_goal">목표 (Goal)</label>
+                        <textarea id="g_goal" placeholder="문제를 해결하거나 도전할 실제 상황의 목표"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="g_role">역할 (Role)</label>
+                        <textarea id="g_role" placeholder="학습자가 맡게 되는 실제 상황 속의 역할"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="g_audience">청중 (Audience)</label>
+                        <textarea id="g_audience" placeholder="결과물을 전달받거나 평가할 실제 대상"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="g_situation">상황 (Situation)</label>
+                        <textarea id="g_situation" placeholder="도전이 발생하는 구체적인 배경과 맥락"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="g_product">산출물 (Product)</label>
+                        <textarea id="g_product" placeholder="학습자가 최종적으로 만들어낼 결과물"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="g_standards">기준 (Standards)</label>
+                        <textarea id="g_standards" placeholder="성공적인 수행을 판단하는 명확한 기준"></textarea>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(4)">&leftarrow; 이전 단계</button>
+                    <button class="btn btn-print" style="margin: 0 0.5rem; background-color: #818cf8;"
+                        onclick="printStep(5)">🖨 5단계 인쇄</button>
+                    <button class="btn btn-next" onclick="nextStep(6)">과제 설계 완료 (6단계로) &rightarrow;</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Rubric Design -->
+            <div class="step-content" id="step6">
+                <h2>6. 평가 루브릭 설계 (Rubric Design)</h2>
+                <p style="color:var(--text-sub); margin-bottom:1.5rem;">성취기준에 따른 수준별 수행 능력을 정의합니다.</p>
+
+                <div class="no-export"
+                    style="margin-bottom: 2rem; padding: 1rem; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <strong style="color: #0369a1;">🪄 루브릭 자동 생성기</strong>
+                        <div style="font-size: 0.85rem; color: #0c4a6e;">지식, 과정, 태도 차원의 루브릭을 성취기준 기반으로 생성합니다.</div>
+                    </div>
+                    <button class="btn" style="background-color: #0ea5e9; color: white;" onclick="generateRubric()">루브릭
+                        생성하기</button>
+                </div>
+
+                <div class="rubric-container" style="overflow-x: auto;">
+                    <table
+                        style="width: 100%; border-collapse: collapse; background-color: white; border: 1px solid var(--border-color);">
+                        <thead>
+                            <tr style="background-color: #f8fafc;">
+                                <th style="border: 1px solid var(--border-color); padding: 0.75rem; width: 20%;">평가 요소
+                                    (Criteria)</th>
+                                <th style="border: 1px solid var(--border-color); padding: 0.75rem; width: 26%;">상
+                                    (High)
+                                </th>
+                                <th style="border: 1px solid var(--border-color); padding: 0.75rem; width: 26%;">중 (Mid)
+                                </th>
+                                <th style="border: 1px solid var(--border-color); padding: 0.75rem; width: 26%;">하 (Low)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="rubricTableBody">
+                            <tr>
+                                <td
+                                    style="border: 1px solid var(--border-color); padding: 0.75rem; font-weight: bold; background-color: #f1f5f9;">
+                                    지식·이해</td>
+                                <td style="border: 1px solid var(--border-color); padding: 0;"><textarea id="rubricK_H"
+                                        style="width:100%; border:none; height:120px; padding:0.5rem; resize:vertical;"></textarea>
+                                </td>
+                                <td style="border: 1px solid var(--border-color); padding: 0;"><textarea id="rubricK_M"
+                                        style="width:100%; border:none; height:120px; padding:0.5rem; resize:vertical;"></textarea>
+                                </td>
+                                <td style="border: 1px solid var(--border-color); padding: 0;"><textarea id="rubricK_L"
+                                        style="width:100%; border:none; height:120px; padding:0.5rem; resize:vertical;"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 1px solid var(--border-color); padding: 0.75rem; font-weight: bold; background-color: #f1f5f9;">
+                                    과정·기능</td>
+                                <td style="border: 1px solid var(--border-color); padding: 0;"><textarea id="rubricS_H"
+                                        style="width:100%; border:none; height:120px; padding:0.5rem; resize:vertical;"></textarea>
+                                </td>
+                                <td style="border: 1px solid var(--border-color); padding: 0;"><textarea id="rubricS_M"
+                                        style="width:100%; border:none; height:120px; padding:0.5rem; resize:vertical;"></textarea>
+                                </td>
+                                <td style="border: 1px solid var(--border-color); padding: 0;"><textarea id="rubricS_L"
+                                        style="width:100%; border:none; height:120px; padding:0.5rem; resize:vertical;"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 1px solid var(--border-color); padding: 0.75rem; font-weight: bold; background-color: #f1f5f9;">
+                                    가치·태도</td>
+                                <td style="border: 1px solid var(--border-color); padding: 0;"><textarea id="rubricA_H"
+                                        style="width:100%; border:none; height:120px; padding:0.5rem; resize:vertical;"></textarea>
+                                </td>
+                                <td style="border: 1px solid var(--border-color); padding: 0;"><textarea id="rubricA_M"
+                                        style="width:100%; border:none; height:120px; padding:0.5rem; resize:vertical;"></textarea>
+                                </td>
+                                <td style="border: 1px solid var(--border-color); padding: 0;"><textarea id="rubricA_L"
+                                        style="width:100%; border:none; height:120px; padding:0.5rem; resize:vertical;"></textarea>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="btn-container" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="btn btn-prev" onclick="prevStep(5)">&leftarrow; 이전 단계</button>
+                    <button class="btn btn-print" style="background-color: #818cf8;" onclick="printStep(6)">🖨 6단계(루브릭)
+                        인쇄</button>
+                    <button class="btn btn-print" style="background-color: #10b981; flex-grow: 1;"
+                        onclick="downloadIntegratedPlan()">💾 설계안 통합 다운로드 (.html)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="margin:0;">🔗 참고링크 관리</h3>
+                <button onclick="closeAdminModal()"
+                    style="border:none; background:none; cursor:pointer; font-size:1.5rem;">&times;</button>
+            </div>
+
+            <div class="manage-list" id="manageList">
+                <!-- Editable link items -->
+            </div>
+
+            <div style="background:#f1f5f9; padding:1rem; border-radius:0.5rem; margin-top:1rem;">
+                <h4 style="margin-top:0; font-size:0.9rem;">새 링크 추가</h4>
+                <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                    <input type="text" id="newLinkName" placeholder="사이트 명칭 (예: 국가교육과정센터)">
+                    <input type="text" id="newLinkSub" placeholder="설명 (예: 교육과정 원문 데이터)">
+                    <input type="text" id="newLinkUrl" placeholder="URL (https://...)">
+                    <button class="btn" onclick="addLink()" style="width:100%; margin-top:0.5rem;">추가하기</button>
+                </div>
+            </div>
+
+            <div style="margin-top:1.5rem; text-align:right;">
+                <button class="btn" style="background:var(--text-sub);" onclick="closeAdminModal()">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // State
+        let currentStep = 1;
+        let selectedSubject = '';
+        let selectedSubjectStd = null;
+        let selectedLibStd = null;
+        let contextText = '';
+
+        // Reference Links State
+        const DEFAULT_LINKS = [
+            { name: '국가교육과정센터', sub: '교육과정 원문 데이터', url: 'https://ncic.re.kr/inv/org/list.do' },
+            { name: '협력수업 성취기준 연결망', sub: '시각화 탐색 도구', url: 'https://wata1593.github.io/test/' },
+            { name: '책쓰기 수업 도구', sub: '글쓰기 교육 솔루션', url: 'https://wata1593.github.io/Student-Author-Project/' }
+        ];
+        let refLinks = JSON.parse(localStorage.getItem('refLinks')) || DEFAULT_LINKS;
+
+        // Initialization
+        window.onload = function () {
+            populateSubjectDropdown();
+            renderLibraryStandards();
+            renderRefLinks();
+        };
+
+        // --- Link Management Functions ---
+        function renderRefLinks() {
+            const container = document.getElementById('dynamicLinks');
+            container.innerHTML = refLinks.map((link, idx) => `
+                <a href="${link.url}" target="_blank" class="ref-link">
+                    <span>${link.sub}</span>
+                    ${idx + 1}) ${link.name}
+                </a>
+            `).join('');
+        }
+
+        function openAdminModal() {
+            const password = prompt('관리자 비밀번호를 입력하세요.');
+            if (password === '1593') {
+                document.getElementById('adminModal').style.display = 'flex';
+                renderManageList();
+            } else if (password !== null) {
+                alert('비밀번호가 틀렸습니다.');
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function renderManageList() {
+            const list = document.getElementById('manageList');
+            list.innerHTML = refLinks.map((link, idx) => `
+                <div class="link-item-edit">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
+                        <span style="font-weight:bold; font-size:0.9rem;">${idx + 1}. ${link.name}</span>
+                        <button class="btn-danger" onclick="deleteLink(${idx})">삭제</button>
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--text-sub); word-break:break-all;">
+                        <div>설명: ${link.sub}</div>
+                        <div>URL: ${link.url}</div>
+                    </div>
+                </div>
+            `).join('');
+            if (refLinks.length === 0) {
+                list.innerHTML = '<p style="text-align:center; color:var(--text-sub); font-size:0.9rem;">등록된 링크가 없습니다.</p>';
+            }
+        }
+
+        function addLink() {
+            const name = document.getElementById('newLinkName').value.trim();
+            const sub = document.getElementById('newLinkSub').value.trim();
+            const url = document.getElementById('newLinkUrl').value.trim();
+
+            if (!name || !url) {
+                alert('명칭과 URL은 필수 입력 항목입니다.');
+                return;
+            }
+
+            refLinks.push({ name, sub, url });
+            saveAndRefreshLinks();
+
+            // Clear inputs
+            document.getElementById('newLinkName').value = '';
+            document.getElementById('newLinkSub').value = '';
+            document.getElementById('newLinkUrl').value = '';
+        }
+
+        function deleteLink(idx) {
+            if (confirm('이 링크를 삭제하시겠습니까?')) {
+                refLinks.splice(idx, 1);
+                saveAndRefreshLinks();
+            }
+        }
+
+        function saveAndRefreshLinks() {
+            localStorage.setItem('refLinks', JSON.stringify(refLinks));
+            renderRefLinks();
+            renderManageList();
+        }
+
+        function addSessionRow() {
+            const tbody = document.getElementById('processTableBody');
+            const rowCount = tbody.rows.length;
+            const newRow = document.createElement('tr');
+
+            newRow.innerHTML = `
+                <td class="session-number" style="border: 1px solid #bfdbfe; text-align: center; font-weight: bold; background-color: #f8fafc;">
+                    ${rowCount + 1}
+                </td>
+                <td style="border: 1px solid #bfdbfe; padding: 0;">
+                    <textarea class="cycle-activities" placeholder="[수업 활동]" style="width: 100%; border: none; min-height: 120px; padding: 0.5rem; resize: vertical; display: block;"></textarea>
+                </td>
+                <td style="border: 1px solid #bfdbfe; padding: 0;">
+                    <textarea class="cycle-methods" placeholder="[수업방법]" style="width: 100%; border: none; min-height: 120px; padding: 0.5rem; resize: vertical; display: block;"></textarea>
+                </td>
+                <td style="border: 1px solid #bfdbfe; padding: 0;">
+                    <textarea class="cycle-focus" placeholder="[주안점]" style="width: 100%; border: none; min-height: 120px; padding: 0.5rem; resize: vertical; display: block;"></textarea>
+                </td>
+                <td class="no-export" style="border: 1px solid #bfdbfe; text-align: center; background-color: #f8fafc;">
+                    <button type="button" class="btn-danger" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;" onclick="removeSessionRow(this)">삭제</button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function removeSessionRow(btn) {
+            const row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+
+            // Re-index remaining rows
+            const rows = document.querySelectorAll('#processTableBody .session-number');
+            rows.forEach((td, idx) => {
+                td.textContent = idx + 1;
+            });
+        }
+
+        function populateSubjectDropdown() {
+            const select = document.getElementById('subjectSelect');
+            // Excluding '도서관/정보 (도정)' from subject dropdown as it is separate
+            const subjects = Object.keys(standardsData).filter(s => !s.includes('도서관'));
+
+            subjects.forEach(subject => {
+                const opt = document.createElement('option');
+                opt.value = subject;
+                opt.textContent = subject;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderSubjectStandards() {
+            const subject = document.getElementById('subjectSelect').value;
+            const container = document.getElementById('subjectStandardsList');
+            container.innerHTML = '';
+
+            if (!subject) {
+                container.innerHTML = '<div style="padding:1rem; color:#888;">교과를 먼저 선택해주세요.</div>';
+                return;
+            }
+
+            const standards = standardsData[subject];
+            standards.forEach(std => {
+                const el = document.createElement('div');
+                el.className = 'standard-item';
+                if (selectedSubjectStd && selectedSubjectStd.code === std.code) {
+                    el.classList.add('selected');
+                }
+
+                el.innerHTML = `
+                    <div class="code-badge">${std.code}</div>
+                    <div>${std.desc}</div>
+                `;
+
+                el.onclick = () => {
+                    // Deselect others
+                    document.querySelectorAll('#subjectStandardsList .standard-item').forEach(i => i.classList.remove('selected'));
+                    el.classList.add('selected');
+                    selectedSubjectStd = std;
+                    selectedSubject = subject;
+                };
+
+                container.appendChild(el);
+            });
+        }
+
+        function renderLibraryStandards() {
+            const container = document.getElementById('libStandardsList');
+            // Assuming "도서관/정보 (도정)" key exists as per data file creation
+            const standards = standardsData["도서관/정보 (도정)"];
+
+            if (!standards) return;
+
+            standards.forEach(std => {
+                const el = document.createElement('div');
+                el.className = 'standard-item';
+                if (selectedLibStd && selectedLibStd.code === std.code) {
+                    el.classList.add('selected');
+                }
+
+                el.innerHTML = `
+                    <div class="code-badge">${std.code}</div>
+                    <div>${std.desc}</div>
+                `;
+
+                el.onclick = () => {
+                    document.querySelectorAll('#libStandardsList .standard-item').forEach(i => i.classList.remove('selected'));
+                    el.classList.add('selected');
+                    selectedLibStd = std;
+                };
+
+                container.appendChild(el);
+            });
+        }
+
+        function selectContext(text) {
+            document.getElementById('customContext').value = text;
+            // Visual feedback on chips
+            document.querySelectorAll('.chip').forEach(c => {
+                if (c.textContent === text) c.classList.add('selected');
+                else c.classList.remove('selected');
+            });
+        }
+
+        function nextStep(step) {
+            // Validation
+            if (step === 2 && !selectedSubjectStd) {
+                alert('교과 성취기준을 선택해주세요.');
+                return;
+            }
+            if (step === 3 && !selectedLibStd) {
+                alert('도서관 성취기준을 선택해주세요.');
+                return;
+            }
+            if (step === 4) {
+                const ctx = document.getElementById('customContext').value;
+                if (!ctx.trim()) {
+                    alert('삶의 맥락을 입력하거나 선택해주세요.');
+                    return;
+                }
+                contextText = ctx;
+                updateSummary();
+            }
+
+            // Transition
+            document.getElementById(`ind-${currentStep}`).classList.remove('active');
+            document.getElementById(`ind-${currentStep}`).classList.add('completed');
+
+            currentStep = step;
+            showStep(currentStep);
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.step-indicator').forEach(i => i.classList.remove('active'));
+
+            document.getElementById(`step${step}`).classList.add('active');
+            document.getElementById(`ind-${step}`).classList.add('active');
+        }
+
+        function printStep(n) {
+            const printClass = `print-step-${n}`;
+
+            // Auto-expand textareas for printing (to prevent clipping)
+            const textareas = document.querySelectorAll('textarea');
+            const originalHeights = [];
+            textareas.forEach(ta => {
+                originalHeights.push(ta.style.height);
+                ta.style.height = 'auto'; // Reset
+                ta.style.height = (ta.scrollHeight + 2) + 'px'; // Set to full content height
+            });
+
+            document.body.classList.add(printClass);
+
+            // Use a slight timeout to ensure styles are applied
+            setTimeout(() => {
+                window.print();
+                document.body.classList.remove(printClass);
+                // Restore original heights
+                textareas.forEach((ta, i) => {
+                    ta.style.height = originalHeights[i];
+                });
+            }, 50);
+        }
+
+        function printAll() {
+            // Auto-expand textareas for printing
+            const textareas = document.querySelectorAll('textarea');
+            const originalHeights = [];
+            textareas.forEach(ta => {
+                originalHeights.push(ta.style.height);
+                ta.style.height = 'auto';
+                ta.style.height = (ta.scrollHeight + 2) + 'px';
+            });
+
+            document.body.classList.add('print-all');
+
+            setTimeout(() => {
+                window.print();
+                document.body.classList.remove('print-all');
+                textareas.forEach((ta, i) => {
+                    ta.style.height = originalHeights[i];
+                });
+            }, 50);
+        }
+
+        function prevStep(step) {
+            document.getElementById(`ind-${currentStep}`).classList.remove('active');
+            document.getElementById(`ind-${currentStep}`).classList.remove('completed');
+
+            currentStep = step;
+            showStep(currentStep);
+        }
+
+        // Questions Data from Ontology (Reclassified into 3 types)
+        const questionTypes = {
+            factual: {
+                label: " 사실적 질문",
+                characteristic: "특정한 사실이나 정답을 요구하며, 지식을 확인하는 질문",
+                templates: ["{대상}의 정의는 무엇인가?", "{사건}은 언제 일어났는가?", "{과정}을 순서대로 나열한다면?", "{수치} 혹은 {결과}는 무엇인가?"]
+            },
+            conceptual: {
+                label: "개념적 질문",
+                characteristic: "개념 간의 관계를 탐구하고 원리를 이해하는 질문",
+                templates: ["{개념A}와 {개념B}는 어떤 상호작용을 하는가?", "{대상}의 본질적인 원리는 무엇인가?", "{현상}의 원인과 결과를 분석한다면?", "{사례}를 통해 알 수 있는 보편적 가치는?"]
+            },
+            controversial: {
+                label: "논쟁적 질문",
+                characteristic: "다양한 관점이 충돌하며 가치 판단을 요구하는 질문",
+                templates: ["{쟁점}에 대해 어떤 입장을 지지하는가?", "{이해관계자}들의 입장이 다른 이유는?", "{정책}의 긍정적/부정적 측면은?", "만약 {조건}이 바뀐다면 어떤 대안이 가능한가?"]
+            }
+        };
+
+        function generateSpecificQuestion(type) {
+            if (!questionTypes[type]) return;
+            const templates = questionTypes[type].templates;
+            const template = templates[Math.floor(Math.random() * templates.length)];
+
+            let result = template;
+            if (selectedSubjectStd) {
+                const keywords = selectedSubjectStd.desc.split(' ').filter(w => w.length > 1).slice(0, 2).join(', ');
+                result = result.replace(/{대상}|{개념[A-B]}|{주제}|{현상}|{개념A}|{개념B}|{쟁점}|{과정}/g, keywords);
+            }
+
+            const idMap = { factual: 'qFactual', conceptual: 'qConceptual', controversial: 'qControversial' };
+            document.getElementById(idMap[type]).value = result;
+        }
+
+        // GRASPS Template Data from Ontology
+        const graspsTemplates = {
+            goal: "여러분의 과제는 [수업 제목]이며, 목표는 [평가과제]하는 것입니다.",
+            role: "여러분은 [전문가/이해관계자]이며, [특정 임무]를 요구받았습니다.",
+            audience: "여러분은 이 주제를 [관련 집단]에게 설명할 수 있어야 합니다.",
+            situation: "이 문제를 해결할 때 중요하게 다루어야 할 내용은 [탐구질문]입니다.",
+            product: "여러분은 [목표]를 해결하기 위해 [결과물]을 만들거나 개발할 필요가 있습니다.",
+            standards: "여러분의 수행 결과물은 [성취기준과 내용요소]를 포함하고 있어야 합니다."
+        };
+
+        function generateGRASPS() {
+            if (!selectedSubjectStd || !selectedLibStd) {
+                alert('성취기준이 선택되지 않았습니다.');
+                return;
+            }
+
+            const title = document.getElementById('lessonTitle').value || "수업 주제";
+            const ctx = document.getElementById('customContext').value || "관련 주제";
+            const keywords = selectedSubjectStd.desc.split(/[ ,.()]+/).filter(w => w.length > 1).slice(0, 2).join(', ');
+
+            // Get Inquiry Questions from Step 4
+            const qFact = document.getElementById('qFactual').value.trim();
+            const qConc = document.getElementById('qConceptual').value.trim();
+            const qCont = document.getElementById('qControversial').value.trim();
+            const allQuestions = [qFact, qConc, qCont].filter(q => q).join(' / ') || "탐구 질문을 입력해주세요.";
+
+            // Role Heuristics
+            const roleMap = {
+                '과학': '환경 과학자 및 기술 연구원',
+                '사회': '지역사회 정책 분석가',
+                '국어': '비평가 및 작가',
+                '도덕': '윤리 위원회 위원',
+                '진로': '미래 설계 컨설턴트',
+                '역사': '역사 문화 큐레이터'
+            };
+            const roleName = roleMap[selectedSubject] || '창의적인 문제 해결 전문가';
+
+            // Get Instructional Intent from Step 4
+            const intent = document.getElementById('instructionalIntent').value.trim() || `${keywords}의 원리를 활용하여 실제 문제를 해결`;
+
+            // Goal
+            document.getElementById('g_goal').value = graspsTemplates.goal
+                .replace("[수업 제목]", title)
+                .replace("[평가과제]", intent);
+
+            // Get Evaluation Task from Step 4
+            const evaluationTask = document.getElementById('graspsTask').value.trim() || `${ctx}와(과) 관련된 대안 제시 및 실행`;
+
+            // Role
+            document.getElementById('g_role').value = graspsTemplates.role
+                .replace("[전문가/이해관계자]", roleName)
+                .replace("[특정 임무]", evaluationTask);
+
+            // Audience
+            document.getElementById('g_audience').value = graspsTemplates.audience
+                .replace("[수업 제목 관련 집단]", "본 주제에 관심 있는 학교 공동체 및 전문가 그룹");
+
+            // Situation
+            document.getElementById('g_situation').value = graspsTemplates.situation
+                .replace("[탐구질문]", allQuestions);
+
+            // Product
+            document.getElementById('g_product').value = graspsTemplates.product
+                .replace("[목표]", "문제를 효과적으로 해결")
+                .replace("[결과물]", "멀티미디어 보고서, 캠페인 웹진 또는 정책 제안서");
+
+            // Get Content Elements from Step 4
+            const kLib = document.getElementById('contentKnowledgeLib').value.trim();
+            const kSub = document.getElementById('contentKnowledgeSub').value.trim();
+            const pLib = document.getElementById('contentProcessLib').value.trim();
+            const pSub = document.getElementById('contentProcessSub').value.trim();
+            const vLib = document.getElementById('contentValueLib').value.trim();
+            const vSub = document.getElementById('contentValueSub').value.trim();
+
+            const allContentElements = [kLib, kSub, pLib, pSub, vLib, vSub]
+                .filter(val => val !== "")
+                .join(', ');
+
+            const contentString = allContentElements
+                ? `${allContentElements} 등 핵심 내용 요소`
+                : "선택된 핵심 내용 요소";
+
+            // Standards
+            document.getElementById('g_standards').value = graspsTemplates.standards
+                .replace("[성취기준과 내용요소]", `${selectedSubjectStd.code}(${keywords}), ${selectedLibStd.code} 및 ${contentString}`);
+        }
+
+        function generateRubric() {
+            if (!selectedSubjectStd || !selectedLibStd) {
+                alert('성취기준이 선택되지 않았습니다.');
+                return;
+            }
+
+            const sub = selectedSubjectStd.desc;
+            const lib = selectedLibStd.desc;
+
+            // Extract keywords from subject standard (smart keyword extraction)
+            const subKeywords = sub.split(/[ ,.()]+/)
+                .filter(w => w.length > 1 && !['이해하고', '인식한다', '설명할', '수행할', '통해'].includes(w))
+                .slice(0, 3).join(', ');
+
+            // Get Content Elements from Step 4 (Merged Lib and Sub)
+            const kLib = document.getElementById('contentKnowledgeLib').value.trim();
+            const kSub = document.getElementById('contentKnowledgeSub').value.trim();
+            const elementK = [kLib, kSub].filter(x => x).join(' / ') || sub;
+
+            const pLib = document.getElementById('contentProcessLib').value.trim();
+            const pSub = document.getElementById('contentProcessSub').value.trim();
+            const elementS = [pLib, pSub].filter(x => x).join(' / ') || sub;
+
+            const vLib = document.getElementById('contentValueLib').value.trim();
+            const vSub = document.getElementById('contentValueSub').value.trim();
+            const elementA = [vLib, vSub].filter(x => x).join(' / ') || "적극적인 탐구 태도";
+
+            // Prepare merged labels (Content Element + Standard Keywords)
+            const labelK = elementK.includes('(') ? elementK : `${elementK} (${subKeywords})`;
+            const labelS = elementS.includes('(') ? elementS : `${elementS} (${subKeywords})`;
+            const labelA = elementA.includes('(') ? elementA : `${elementA} (${subKeywords})`;
+
+            // Enhanced generative logic incorporating Content Elements + Standards Keywords
+            const rubricData = {
+                K: { // Knowledge
+                    H: `${labelK}의 핵심 개념을 완벽히 이해하고, ${lib}의 정보 검색 및 분석 원리와 연계하여 깊이 있게 설명할 수 있음.`,
+                    M: `${labelK}의 주요 내용을 파악하고 있으며, ${lib}의 탐구 절차를 적절히 적용할 수 있음.`,
+                    L: `${labelK}나 ${lib}의 지식 수준이 단편적이며, 개념 간의 관계를 파악하는 데 어려움이 있음.`
+                },
+                S: { // Skill
+                    H: `${labelS} 과정에서 요구하는 핵심 기능을 숙달하여 수행하고, 정보 활용 능력(탐색-분석-산출)을 통합적으로 발휘해 탁월한 결과물을 만들어냄.`,
+                    M: `${labelS} 해결 과정에 적극적으로 참여하며, 안내된 정보 활용 도구를 사용하여 완성도 있는 산출물을 제작함.`,
+                    L: `${labelS}를 수행하는 기술적 숙련도가 낮으며, 정보 기기나 자료 활용 시 지속적인 도움이 필요함.`
+                },
+                A: { // Attitude
+                    H: `${labelA}의 가치를 내면화하여 주도적으로 탐구하며, 지식 정보 보안 및 저작권 윤리를 준수하고 협력적 태도를 일관되게 보임.`,
+                    M: `${labelA} 관련 활동에 성실히 참여하고, 정보 활용 윤리의 중요성을 인식하며 동료와 협력하려 노력함.`,
+                    L: `${labelA} 관련 활동에 소극적이며, 정해진 모둠 규칙이나 정보 활용의 기초적인 에티켓 준수가 부족함.`
+                }
+            };
+
+            // Fill textareas
+            document.getElementById('rubricK_H').value = rubricData.K.H;
+            document.getElementById('rubricK_M').value = rubricData.K.M;
+            document.getElementById('rubricK_L').value = rubricData.K.L;
+
+            document.getElementById('rubricS_H').value = rubricData.S.H;
+            document.getElementById('rubricS_M').value = rubricData.S.M;
+            document.getElementById('rubricS_L').value = rubricData.S.L;
+
+            document.getElementById('rubricA_H').value = rubricData.A.H;
+            document.getElementById('rubricA_M').value = rubricData.A.M;
+            document.getElementById('rubricA_L').value = rubricData.A.L;
+        }
+
+        function updateSummary() {
+            document.getElementById('summarySubject').innerHTML = `
+                <span style="font-weight:bold; color:var(--primary-color)">[${selectedSubject}]</span> 
+                ${selectedSubjectStd.code} ${selectedSubjectStd.desc}
+            `;
+            document.getElementById('summaryLib').innerHTML = `
+                ${selectedLibStd.code} ${selectedLibStd.desc}
+            `;
+            document.getElementById('summaryContext').textContent = contextText;
+        }
+
+        // --- Integrated Download Function ---
+        function downloadIntegratedPlan() {
+            // 1. Prepare Export Container
+            const exportContainer = document.createElement('div');
+            exportContainer.className = 'exporting';
+
+            // 2. Clone Steps 4, 5, 6
+            const steps = [
+                document.getElementById('step4'),
+                document.getElementById('step5'),
+                document.getElementById('step6')
+            ];
+
+            steps.forEach((step, idx) => {
+                const clone = step.cloneNode(true);
+                clone.style.display = 'block';
+                clone.style.marginBottom = '40px';
+                clone.style.padding = '0';
+                clone.style.boxShadow = 'none';
+
+                // Remove navigation and UI buttons from clone
+                const uiElements = clone.querySelectorAll('.btn-container, button:not(.btn-admin), .btn-admin, .no-export');
+                uiElements.forEach(el => el.remove());
+
+                // Transform input/textarea to text in clone
+                const originalControls = step.querySelectorAll('input, textarea');
+                const clonedControls = clone.querySelectorAll('input, textarea');
+
+                clonedControls.forEach((control, cIdx) => {
+                    const original = originalControls[cIdx];
+                    const val = original.value || '';
+                    const wrapper = document.createElement('div');
+                    wrapper.style.whiteSpace = 'pre-wrap';
+                    wrapper.style.padding = '8px';
+                    wrapper.style.border = '1px solid #e2e8f0';
+                    wrapper.style.borderRadius = '4px';
+                    wrapper.style.marginBottom = '10px';
+                    wrapper.style.minHeight = '1.2em';
+                    wrapper.style.backgroundColor = '#fff';
+                    wrapper.textContent = val;
+
+                    control.parentNode.replaceChild(wrapper, control);
+                });
+
+                // Add Page Header
+                const header = document.createElement('h1');
+                header.textContent = `단계 ${idx + 4}`;
+                header.style.color = '#6366f1';
+                header.style.borderBottom = '2px solid #6366f1';
+                header.style.paddingBottom = '10px';
+                header.style.marginTop = '40px';
+
+                const stepWrapper = document.createElement('div');
+                stepWrapper.className = 'step-wrapper';
+                stepWrapper.appendChild(header);
+                stepWrapper.appendChild(clone);
+                exportContainer.appendChild(stepWrapper);
+            });
+
+            // 3. Create Full HTML Document
+            const title = document.getElementById('lessonTitle').value || '협력수업_설계안';
+            const htmlContent = `
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>${title}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; padding: 40px; color: #1e293b; line-height: 1.6; background-color: #fff; }
+        h1, h2, h3 { color: #6366f1; }
+        .summary-box { background-color: #f1f5f9; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 20px; }
+        .summary-label { font-weight: bold; color: #64748b; font-size: 0.85rem; text-transform: uppercase; }
+        .summary-content { font-size: 1.1rem; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #bfdbfe; padding: 12px; text-align: left; }
+        th { background-color: #f8fafc; color: #64748b; font-size: 0.9rem; }
+        .code-badge { background-color: #6366f1; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; display: inline-block; margin-bottom: 4px; }
+        .design-grid { display: grid; gap: 20px; }
+        
+        @media print { 
+            .no-print { display: none; } 
+            .step-wrapper { 
+                page-break-before: always; 
+            }
+            .step-wrapper:first-child {
+                page-break-before: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header style="text-align:center; margin-bottom: 50px;">
+        <h1 style="font-size: 2.5rem; margin-bottom:10px;">협력수업 설계 통합 보고서</h1>
+        <p style="color: #64748b;">${new Date().toLocaleDateString()}</p>
+    </header>
+    ${exportContainer.innerHTML}
+</body>
+</html>`;
+
+            // 4. Trigger Download
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title.replace(/\s+/g, '_')}_통합설계안.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+    </script>
+</body>
+
+</html>
